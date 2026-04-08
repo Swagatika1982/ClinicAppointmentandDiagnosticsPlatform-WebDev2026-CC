@@ -2,7 +2,7 @@
 Clinic Appointment and Diagnostics Platform – ER Diagram and database design for managing doctors, patients, appointments, consultations, diagnostic tests, reports, and payments in a modern clinic system.
 # Clinic Appointment and Diagnostics Platform – ER Diagram
 
-[[https://app.eraser.io/workspace/KUCJo8e0p5x2XBhLqiG9?origin=share]
+https://app.eraser.io/workspace/KUCJo8e0p5x2XBhLqiG9?origin=share
 
 This project contains the Entity Relationship Diagram (ERD) for a modern clinic management platform. 
 
