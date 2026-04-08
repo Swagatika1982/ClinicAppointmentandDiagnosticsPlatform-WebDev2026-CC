@@ -4,24 +4,29 @@ Clinic Appointment and Diagnostics Platform – ER Diagram and database design f
 
 [[https://app.eraser.io/workspace/KUCJo8e0p5x2XBhLqiG9?origin=share](https://app.eraser.io/workspace/KUCJo8e0p5x2XBhLqiG9?origin=share)](https://app.eraser.io/workspace/KUCJo8e0p5x2XBhLqiG9?origin=share)
 
-This project contains the Entity Relationship Diagram (ERD) for a modern clinic management platform.
+This project contains the Entity Relationship Diagram (ERD) for a modern clinic management platform. 
 
-The goal of this system is to help a clinic digitally manage:
+The objective of this system is to help a clinic digitally manage its daily operations in a clean and scalable way.
 
-- patients
-- doctors
-- departments and specialties
-- appointments
-- consultations / doctor visits
-- diagnostic tests
-- reports
-- payments
+The platform supports:
 
-This is designed as a clinic-level system, not for a large hospital, so the model is kept simple, practical, and scalable.---
+- patient registration and profile management
+- doctor management with departments and specialties
+- appointment booking
+- actual consultations / doctor visits
+- diagnostic test prescriptions
+- report generation
+- payment handling
+- insurance and claim support
 
-## Problem Statement
+This project focuses only on database design and ER modeling.
 
-A modern clinic wants to organize its daily operations digitally.
+It is a structured clinic management system.
+
+
+## Business Problem
+
+A modern clinic wants to organize its operations digitally.
 
 Patients should be able to:
 
@@ -30,149 +35,251 @@ Patients should be able to:
 - undergo diagnostic tests if prescribed
 - receive reports later
 - make payments
+- use insurance if applicable
 
-Doctors may belong to different departments and specialties.
+The clinic may have:
 
-A patient can visit the clinic multiple times.
+- elderly patients
+- women
+- children
+- working professionals
+- repeat patients with multiple visits
 
-One consultation can lead to multiple diagnostic tests.
+Doctors may belong to different specialties and departments.
 
-Reports may be generated later after the test is completed.
+Examples:
+
+- pediatrician for children
+- cardiologist for elderly patients
+- dermatologist for skin issues
+- general physician for regular checkups
+
+This ERD is designed to support all these real-life use cases.
 
 ---
 
-## Main Entities Used
+## Main Entities
 
 The ER diagram includes the following entities:
 
-- **Role**
-- **User**
-- **Doctor**
-- **Patient**
-- **Department**
-- **Specialty**
-- **Appointment**
-- **Consultation**
-- **DiagnosticTest**
-- **ConsultationTest**
-- **Report**
-- **Payment**
+- Role
+- User
+- Doctor
+- Patient
+- Department
+- Specialty
+- Appointment
+- Consultation
+- DiagnosticTest
+- ConsultationTest
+- Report
+- Payment
+- InsuranceProvider
+- InsurancePolicy
+- InsuranceClaim
 
----
+## Important Design Decisions
 
-## Important Design Decision
+1. User Master Table with Roles
 
-One of the most important design choices in this ERD is the difference between:
-
-### Appointment
-This is the scheduled booking.
-
-Example:  
-A patient books an appointment for Monday at 10:00 AM.
-
-### Consultation
-This is the actual doctor visit.
-
-Example:  
-The patient actually visits the doctor and gets diagnosed.
-
-Not every appointment results in consultation.
-
-For example:
-
-- patient cancels
-- no show
-- rescheduled
-
-This is why both are separate entities.
-
----
-
-## Real Life Example
-
-Example 1:
-
-A **young mother brings her child** to a pediatric doctor.
-
-- Patient = child
-- Doctor = Pediatric specialist
-- Appointment = booked for 4 PM
-- Consultation = doctor visit happens
-- Test prescribed = blood test
-- Report generated = next day
-- Payment completed = consultation + test charges
-
----
-
-Example 2:
-
-An **older male patient** visits a cardiologist.
-
-- Doctor specialty = Cardiology
-- Consultation diagnosis = chest pain
-- Diagnostic tests = ECG + blood pressure + blood work
-- Multiple reports generated
-- Payment linked to consultation
-
----
-
-Example 3:
-
-A **working woman visits dermatology**
-
-- appointment booked online
-- consultation completed
-- skin allergy test prescribed
-- report uploaded later
-
-This shows how the design supports men, women, children, and elderly patients.
-
----
-
-## Why User Master Table is Used
-
-A `User` table is used to store common details like:
+A `User` master table is used to store common details such as:
 
 - name
-- phone
 - email
+- phone
 - password
 - gender
+- address
 
-This avoids duplication.
-
-Role-based design is used:
+Role-based access is supported through:
 
 - Admin
 - Doctor
 - Patient
 
-Then specific details are stored in:
+Doctor-specific and patient-specific details are stored separately.---
 
-- Doctor table
-- Patient table
+2. Appointment vs Consultation
 
-This is closer to real-world application architecture.
+This is one of the most important design decisions.
 
----
+1.1 Appointment
+Represents the scheduled booking.
 
-## Relationships Covered
+Example:
+A woman books an appointment with a dermatologist for Monday 4 PM.
 
-- one patient can book many appointments
-- one doctor can attend many patients
-- one consultation can have many tests
-- one test record can generate one report
-- one consultation can have many payments
+1.2 Consultation
+Represents the actual doctor visit.
 
----
+Example:
+The doctor sees the patient, checks symptoms, and gives diagnosis.
 
-## Tools Used
+These are kept separate because:
 
-- **Eraser** for ER Diagram
-- **GitHub** for submission
+- appointment may be cancelled
+- patient may not show up
+- appointment may be rescheduled
 
----
+So not every appointment results in consultation.
 
-## Author
+1.3 Multiple Tests per Consultation
 
-Created as part of SQL / Database Design assignment practice.
+One consultation may lead to multiple diagnostic tests.
+
+Example:
+An elderly patient visits a cardiologist for chest pain.
+
+Doctor may prescribe:
+
+- ECG
+- blood pressure test
+- blood work
+
+This is handled using `ConsultationTest`.
+
+This junction table supports multiple tests for one consultation.---
+
+1.4. Reports Generated Later
+
+Reports may not be available immediately.
+
+For example:
+
+- blood sample collected today
+- report generated tomorrow
+
+This is why `Report` is linked separately to `ConsultationTest`.
+
+This supports delayed report generation.
+
+## Insurance and Billing Support
+
+To make the system more practical, insurance support is included.
+
+Many patients may use health insurance for consultations and diagnostic tests.
+
+Instead of storing insurance as a simple column, a dedicated insurance structure is created.---
+
+### InsuranceProvider
+
+Stores insurance company details.
+
+Examples:
+
+- Blue Cross
+- Aetna
+- UnitedHealthcare
+
+### InsurancePolicy
+
+Stores patient insurance details.
+
+Includes:
+
+- provider
+- policy number
+- coverage percentage
+- validity period
+- policy status
+
+This supports one patient having multiple policies over time.
+
+
+### InsuranceClaim
+
+Tracks insurance claim raised against a consultation.
+
+Includes:
+
+- claim amount
+- approved amount
+- claim status
+- settlement date
+
+This helps separate insurance-covered amount from patient-paid amount.
+
+
+
+### Payment Flow
+
+Payments are connected to:
+
+- consultation
+- insurance claim
+
+This supports:
+
+- partial payment by patient
+- insurance-covered payment
+- balance due
+- rejected claim scenarios
+
+## Real-Life Examples
+
+### Example 1 – Child Patient
+
+A mother brings her child to a pediatrician.
+
+Flow:
+
+- appointment booked
+- consultation completed
+- blood test prescribed
+- report generated after test result(reviewed by Dr.)
+- payment completed
+
+### Example 2 – Elderly Patient with Insurance
+
+An older patient visits a cardiologist.
+
+- consultation fee = $200
+- insurance covers 70%
+- insurance pays = $140
+- patient pays = $60
+
+This is supported through:
+
+- Consultation
+- InsuranceClaim
+- Payment
+
+
+### Example 3 – Woman Patient
+
+A woman visits a dermatologist.
+
+- appointment booked
+- consultation completed
+- allergy skin test prescribed
+- report uploaded later
+- partial insurance coverage applied
+
+This flow is fully supported.
+
+## Relationship Summary
+
+- one role → many users
+- one patient → many appointments
+- one doctor → many appointments
+- one appointment → zero or one consultation
+- one consultation → many diagnostic tests
+- one test record → zero or one report
+- one patient → many insurance policies
+- one consultation → many claims
+- one consultation → many payments
+
+## Conclusion
+
+This ERD is designed to represent a modern clinic platform in a realistic and scalable way.
+
+It supports:
+
+- multiple patient visits
+- multiple doctor specialties
+- diagnostics and reports
+- insurance-based billing
+- real-world clinic workflows
+
+The model is normalized, practical, and suitable for SQL database implementation.
+
